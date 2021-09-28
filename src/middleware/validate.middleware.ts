@@ -87,3 +87,8 @@ export const validateUpdateNote = validate([
   { field: 'content', type: 'string' },
   { field: 'tags', isArray: true, arrayItemType: 'string' },
 ]);
+
+export const validateChangePassword = validate([
+  { field: 'currentPassword', required: true, type: 'string' },
+  { field: 'newPassword', required: true, type: 'string', minLength: 6, maxLength: 128 },
+]);
