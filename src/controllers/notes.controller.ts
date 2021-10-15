@@ -283,3 +283,16 @@ export const unpinNote = async (req: AuthRequest, res: Response) => {
 
   res.json({ note: result.rows[0] });
 };
+
+export const exportNotes = async (req: AuthRequest, res: Response) => {
+  const userId = req.user!.id;
+
+  const result = await pool.query(
+    'SELECT id, title, content, tags, archived, pinned, created_at, updated_at FROM notes WHERE user_id = $1 ORDER BY created_at ASC',
+    [userId]
+  );
+
+  res.setHeader('Content-Type', 'application/json');
+  res.setHeader('Content-Disposition', 'attachment; filename="notes-export.json"');
+  res.json({ exportedAt: new Date().toISOString(), count: result.rows.length, notes: result.rows });
+};
