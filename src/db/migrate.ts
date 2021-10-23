@@ -30,6 +30,10 @@ const migrate = async () => {
       CREATE INDEX IF NOT EXISTS idx_notes_user_id ON notes(user_id);
     `);
 
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_notes_tags ON notes USING GIN(tags);
+    `);
+
     await client.query('COMMIT');
     console.log('Migrations completed successfully');
   } catch (err) {
