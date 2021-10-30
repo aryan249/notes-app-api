@@ -70,3 +70,8 @@ export const validateRegister = validate([
   { field: 'email', required: true, type: 'string', isEmail: true },
   { field: 'password', required: true, type: 'string', minLength: 6, maxLength: 128 },
 ]);
+
+export const validateLogin = validate([
+  { field: 'email', required: true, type: 'string', isEmail: true },
+  { field: 'password', required: true, type: 'string' },
+]);
