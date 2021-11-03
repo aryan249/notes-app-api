@@ -75,3 +75,9 @@ export const validateLogin = validate([
   { field: 'email', required: true, type: 'string', isEmail: true },
   { field: 'password', required: true, type: 'string' },
 ]);
+
+export const validateCreateNote = validate([
+  { field: 'title', required: true, type: 'string', minLength: 1, maxLength: 255 },
+  { field: 'content', type: 'string' },
+  { field: 'tags', isArray: true, arrayItemType: 'string' },
+]);
