@@ -34,3 +34,8 @@ export interface UpdateNoteBody {
   content?: string;
   tags?: string[];
 }
+
+export interface RegisterBody {
+  email: string;
+  password: string;
+}
