@@ -42,6 +42,10 @@ const migrate = async () => {
       CREATE INDEX IF NOT EXISTS idx_notes_archived ON notes(archived);
     `);
 
+    await client.query(`
+      ALTER TABLE notes ADD COLUMN IF NOT EXISTS pinned BOOLEAN DEFAULT FALSE;
+    `);
+
     await client.query('COMMIT');
     console.log('Migrations completed successfully');
   } catch (err) {
