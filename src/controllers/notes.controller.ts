@@ -63,3 +63,25 @@ export const getNotes = async (req: AuthRequest, res: Response) => {
     },
   });
 };
+
+export const getNoteById = async (req: AuthRequest, res: Response) => {
+  const userId = req.user!.id;
+  const noteId = parseInt(req.params.id as string, 10);
+
+  if (isNaN(noteId)) {
+    res.status(400).json({ error: 'Invalid note ID' });
+    return;
+  }
+
+  const result = await pool.query(
+    'SELECT * FROM notes WHERE id = $1 AND user_id = $2',
+    [noteId, userId]
+  );
+
+  if (result.rows.length === 0) {
+    res.status(404).json({ error: 'Note not found' });
+    return;
+  }
+
+  res.json({ note: result.rows[0] });
+};
