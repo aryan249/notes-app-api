@@ -24,3 +24,7 @@ export const errorHandler = (
   console.error('Unhandled error:', err);
   res.status(500).json({ error: 'Internal server error' });
 };
+
+export const notFoundHandler = (_req: Request, res: Response) => {
+  res.status(404).json({ error: 'Route not found' });
+};
