@@ -9,3 +9,18 @@ export class AppError extends Error {
     this.name = 'AppError';
   }
 }
+
+export const errorHandler = (
+  err: Error,
+  _req: Request,
+  res: Response,
+  _next: NextFunction
+) => {
+  if (err instanceof AppError) {
+    res.status(err.statusCode).json({ error: err.message });
+    return;
+  }
+
+  console.error('Unhandled error:', err);
+  res.status(500).json({ error: 'Internal server error' });
+};
