@@ -167,3 +167,31 @@ export const bulkDelete = async (req: AuthRequest, res: Response) => {
 
   res.json({ deleted: result.rows.map((r) => r.id), count: result.rowCount });
 };
+
+export const duplicateNote = async (req: AuthRequest, res: Response) => {
+  const userId = req.user!.id;
+  const noteId = parseInt(req.params.id as string, 10);
+
+  if (isNaN(noteId)) {
+    res.status(400).json({ error: 'Invalid note ID' });
+    return;
+  }
+
+  const existing = await pool.query(
+    'SELECT title, content, tags FROM notes WHERE id = $1 AND user_id = $2',
+    [noteId, userId]
+  );
+
+  if (existing.rows.length === 0) {
+    res.status(404).json({ error: 'Note not found' });
+    return;
+  }
+
+  const { title, content, tags } = existing.rows[0];
+  const result = await pool.query(
+    'INSERT INTO notes (title, content, tags, user_id) VALUES ($1, $2, $3, $4) RETURNING *',
+    [`${title} (copy)`, content, tags, userId]
+  );
+
+  res.status(201).json({ note: result.rows[0] });
+};
