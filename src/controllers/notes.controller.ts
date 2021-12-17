@@ -85,3 +85,41 @@ export const getNoteById = async (req: AuthRequest, res: Response) => {
 
   res.json({ note: result.rows[0] });
 };
+
+export const updateNote = async (req: AuthRequest, res: Response) => {
+  const userId = req.user!.id;
+  const noteId = parseInt(req.params.id as string, 10);
+
+  if (isNaN(noteId)) {
+    res.status(400).json({ error: 'Invalid note ID' });
+    return;
+  }
+
+  const { title, content, tags } = req.body as UpdateNoteBody;
+
+  const existing = await pool.query(
+    'SELECT * FROM notes WHERE id = $1 AND user_id = $2',
+    [noteId, userId]
+  );
+
+  if (existing.rows.length === 0) {
+    res.status(404).json({ error: 'Note not found' });
+    return;
+  }
+
+  const current = existing.rows[0];
+  const result = await pool.query(
+    `UPDATE notes SET title = $1, content = $2, tags = $3, updated_at = NOW()
+     WHERE id = $4 AND user_id = $5
+     RETURNING *`,
+    [
+      title ?? current.title,
+      content ?? current.content,
+      tags ?? current.tags,
+      noteId,
+      userId,
+    ]
+  );
+
+  res.json({ note: result.rows[0] });
+};
