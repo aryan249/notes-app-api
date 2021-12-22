@@ -14,6 +14,18 @@ const migrate = async () => {
       );
     `);
 
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS notes (
+        id SERIAL PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        content TEXT NOT NULL DEFAULT '',
+        tags TEXT[] DEFAULT '{}',
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE
+      );
+    `);
+
     await client.query('COMMIT');
     console.log('Migrations completed successfully');
   } catch (err) {
