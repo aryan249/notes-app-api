@@ -1,0 +1,5 @@
+node_modules/
+dist/
+.env
+_build_commits.sh
+rewrite-commits.sh

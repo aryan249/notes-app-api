@@ -1,0 +1,9 @@
+{
+  "name": "notes-app-api",
+  "version": "1.0.0",
+  "description": "REST API for a notes application",
+  "main": "dist/index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
