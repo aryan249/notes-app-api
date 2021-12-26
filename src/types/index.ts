@@ -28,3 +28,9 @@ export interface CreateNoteBody {
   content: string;
   tags?: string[];
 }
+
+export interface UpdateNoteBody {
+  title?: string;
+  content?: string;
+  tags?: string[];
+}
