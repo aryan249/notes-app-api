@@ -26,6 +26,10 @@ const migrate = async () => {
       );
     `);
 
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_notes_user_id ON notes(user_id);
+    `);
+
     await client.query('COMMIT');
     console.log('Migrations completed successfully');
   } catch (err) {
