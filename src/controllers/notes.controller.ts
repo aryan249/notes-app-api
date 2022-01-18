@@ -15,3 +15,51 @@ export const createNote = async (req: AuthRequest, res: Response) => {
 
   res.status(201).json({ note: result.rows[0] });
 };
+
+export const getNotes = async (req: AuthRequest, res: Response) => {
+  const userId = req.user!.id;
+  const { search, tag, archived } = req.query;
+  const page = Math.max(1, parseInt(req.query.page as string, 10) || 1);
+  const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string, 10) || 20));
+  const offset = (page - 1) * limit;
+
+  let whereClause = 'WHERE user_id = $1';
+  const params: (string | number | boolean)[] = [userId];
+
+  if (archived === 'true' || archived === 'false') {
+    params.push(archived === 'true');
+    whereClause += ` AND archived = $${params.length}`;
+  }
+
+  if (typeof search === 'string' && search.trim()) {
+    params.push(`%${search.trim()}%`);
+    whereClause += ` AND (title ILIKE $${params.length} OR content ILIKE $${params.length})`;
+  }
+
+  if (typeof tag === 'string' && tag.trim()) {
+    params.push(tag.trim());
+    whereClause += ` AND $${params.length} = ANY(tags)`;
+  }
+
+  const countResult = await pool.query(
+    `SELECT COUNT(*) FROM notes ${whereClause}`,
+    params
+  );
+  const total = parseInt(countResult.rows[0].count, 10);
+
+  params.push(limit, offset);
+  const result = await pool.query(
+    `SELECT * FROM notes ${whereClause} ORDER BY pinned DESC, updated_at DESC LIMIT $${params.length - 1} OFFSET $${params.length}`,
+    params
+  );
+
+  res.json({
+    notes: result.rows,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+  });
+};
