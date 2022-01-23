@@ -81,3 +81,9 @@ export const validateCreateNote = validate([
   { field: 'content', type: 'string' },
   { field: 'tags', isArray: true, arrayItemType: 'string' },
 ]);
+
+export const validateUpdateNote = validate([
+  { field: 'title', type: 'string', minLength: 1, maxLength: 255 },
+  { field: 'content', type: 'string' },
+  { field: 'tags', isArray: true, arrayItemType: 'string' },
+]);
