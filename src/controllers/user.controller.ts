@@ -41,3 +41,15 @@ export const changePassword = async (req: AuthRequest, res: Response) => {
 
   res.json({ message: 'Password updated successfully' });
 };
+
+export const deleteAccount = async (req: AuthRequest, res: Response) => {
+  const userId = req.user!.id;
+
+  const result = await pool.query('DELETE FROM users WHERE id = $1 RETURNING id', [userId]);
+  if (result.rows.length === 0) {
+    res.status(404).json({ error: 'User not found' });
+    return;
+  }
+
+  res.status(204).send();
+};
