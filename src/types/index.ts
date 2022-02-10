@@ -1,3 +1,5 @@
+import { Request } from 'express';
+
 export interface User {
   id: number;
   email: string;
@@ -15,4 +17,8 @@ export interface Note {
   created_at: Date;
   updated_at: Date;
   user_id: number;
+}
+
+export interface AuthRequest extends Request {
+  user?: { id: number; email: string };
 }
