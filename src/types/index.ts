@@ -22,3 +22,9 @@ export interface Note {
 export interface AuthRequest extends Request {
   user?: { id: number; email: string };
 }
+
+export interface CreateNoteBody {
+  title: string;
+  content: string;
+  tags?: string[];
+}
