@@ -34,6 +34,10 @@ const migrate = async () => {
       CREATE INDEX IF NOT EXISTS idx_notes_tags ON notes USING GIN(tags);
     `);
 
+    await client.query(`
+      ALTER TABLE notes ADD COLUMN IF NOT EXISTS archived BOOLEAN DEFAULT FALSE;
+    `);
+
     await client.query('COMMIT');
     console.log('Migrations completed successfully');
   } catch (err) {
