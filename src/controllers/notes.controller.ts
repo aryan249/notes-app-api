@@ -195,3 +195,25 @@ export const duplicateNote = async (req: AuthRequest, res: Response) => {
 
   res.status(201).json({ note: result.rows[0] });
 };
+
+export const archiveNote = async (req: AuthRequest, res: Response) => {
+  const userId = req.user!.id;
+  const noteId = parseInt(req.params.id as string, 10);
+
+  if (isNaN(noteId)) {
+    res.status(400).json({ error: 'Invalid note ID' });
+    return;
+  }
+
+  const result = await pool.query(
+    'UPDATE notes SET archived = TRUE, updated_at = NOW() WHERE id = $1 AND user_id = $2 RETURNING *',
+    [noteId, userId]
+  );
+
+  if (result.rows.length === 0) {
+    res.status(404).json({ error: 'Note not found' });
+    return;
+  }
+
+  res.json({ note: result.rows[0] });
+};
