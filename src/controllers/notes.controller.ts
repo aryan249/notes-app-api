@@ -123,3 +123,25 @@ export const updateNote = async (req: AuthRequest, res: Response) => {
 
   res.json({ note: result.rows[0] });
 };
+
+export const deleteNote = async (req: AuthRequest, res: Response) => {
+  const userId = req.user!.id;
+  const noteId = parseInt(req.params.id as string, 10);
+
+  if (isNaN(noteId)) {
+    res.status(400).json({ error: 'Invalid note ID' });
+    return;
+  }
+
+  const result = await pool.query(
+    'DELETE FROM notes WHERE id = $1 AND user_id = $2 RETURNING id',
+    [noteId, userId]
+  );
+
+  if (result.rows.length === 0) {
+    res.status(404).json({ error: 'Note not found' });
+    return;
+  }
+
+  res.status(204).send();
+};
