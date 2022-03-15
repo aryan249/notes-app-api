@@ -145,3 +145,25 @@ export const deleteNote = async (req: AuthRequest, res: Response) => {
 
   res.status(204).send();
 };
+
+export const bulkDelete = async (req: AuthRequest, res: Response) => {
+  const userId = req.user!.id;
+  const { ids } = req.body;
+
+  if (!Array.isArray(ids) || ids.length === 0) {
+    res.status(400).json({ error: 'ids must be a non-empty array of numbers' });
+    return;
+  }
+
+  if (!ids.every((id: unknown) => typeof id === 'number' && Number.isInteger(id))) {
+    res.status(400).json({ error: 'All ids must be integers' });
+    return;
+  }
+
+  const result = await pool.query(
+    'DELETE FROM notes WHERE id = ANY($1) AND user_id = $2 RETURNING id',
+    [ids, userId]
+  );
+
+  res.json({ deleted: result.rows.map((r) => r.id), count: result.rowCount });
+};
