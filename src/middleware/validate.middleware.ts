@@ -65,3 +65,8 @@ export const validate = (rules: ValidationRule[]) => {
     next();
   };
 };
+
+export const validateRegister = validate([
+  { field: 'email', required: true, type: 'string', isEmail: true },
+  { field: 'password', required: true, type: 'string', minLength: 6, maxLength: 128 },
+]);
