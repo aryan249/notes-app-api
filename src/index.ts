@@ -3,6 +3,12 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import { config } from './config';
+import authRoutes from './routes/auth.routes';
+import notesRoutes from './routes/notes.routes';
+import userRoutes from './routes/user.routes';
+import tagsRoutes from './routes/tags.routes';
+import statsRoutes from './routes/stats.routes';
+import { apiLimiter } from './middleware/rateLimit.middleware';
 import { requestId } from './middleware/requestId.middleware';
 import pool from './db/pool';
 
@@ -24,5 +30,12 @@ app.get('/health', async (_req, res) => {
     res.status(503).json({ status: 'error', database: 'disconnected' });
   }
 });
+
+app.use('/api', apiLimiter);
+app.use('/api/auth', authRoutes);
+app.use('/api/notes', notesRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/tags', tagsRoutes);
+app.use('/api/stats', statsRoutes);
 
 export default app;
